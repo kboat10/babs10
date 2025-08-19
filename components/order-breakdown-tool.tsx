@@ -1297,18 +1297,27 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
       )}
 
       {showBreakdown && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden">
-            <CardHeader>
-              <CardTitle>Order Breakdown</CardTitle>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-2xl shadow-blue-500/20 border-0 bg-white/95 backdrop-blur-xl">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+              <CardTitle className="font-bold">Order Breakdown</CardTitle>
             </CardHeader>
-            <CardContent className="overflow-y-auto">
-              <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded border">{breakdownOutput}</pre>
-              <div className="flex gap-2 mt-4">
-                <Button onClick={() => navigator.clipboard.writeText(breakdownOutput)} className="flex-1">
+            <CardContent className="overflow-y-auto p-6">
+              <pre className="whitespace-pre-wrap text-sm bg-gradient-to-br from-blue-50/80 to-indigo-50/50 p-6 rounded-xl border border-blue-200/30 shadow-inner backdrop-blur-sm font-mono">
+                {breakdownOutput}
+              </pre>
+              <div className="flex gap-3 mt-6">
+                <Button 
+                  onClick={() => navigator.clipboard.writeText(breakdownOutput)} 
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 button-3d text-white font-semibold"
+                >
                   Copy to Clipboard
                 </Button>
-                <Button variant="outline" onClick={() => setShowBreakdown(false)} className="flex-1">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowBreakdown(false)} 
+                  className="flex-1 border-blue-300/50 text-blue-700 hover:bg-blue-50 button-3d"
+                >
                   Close
                 </Button>
               </div>
