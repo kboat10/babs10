@@ -13,8 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserPlus, LogIn, Package } from "lucide-react"
 
 interface User {
+  id: string
   email: string
-  pin: string
   createdAt: string
 }
 
@@ -22,10 +22,13 @@ interface AuthWrapperProps {
   children: ReactNode
 }
 
+const API_BASE_URL = "http://localhost:8000/api"
+
 export default function AuthWrapper({ children }: AuthWrapperProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [currentUser, setCurrentUser] = useState<string | null>(null)
   const [authTab, setAuthTab] = useState("signin")
+  const [isLoading, setIsLoading] = useState(false)
 
   // Sign In Form
   const [signInEmail, setSignInEmail] = useState("")
@@ -60,7 +63,7 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
     localStorage.setItem("orderToolAuth", JSON.stringify(authData))
   }
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!signUpEmail.trim() || !signUpPin.trim()) {
       alert("Please enter both email and PIN.")
       return
@@ -76,57 +79,71 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
       return
     }
 
-    // Check if user already exists
-    const existingUsers = JSON.parse(localStorage.getItem("orderToolUsers") || "{}")
-    if (existingUsers[signUpEmail]) {
-      alert("User with this email already exists.")
-      return
+    setIsLoading(true)
+    try {
+      const response = await fetch(`${API_BASE_URL}/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: signUpEmail.trim(),
+          pin: signUpPin,
+        }),
+      })
+
+      if (response.ok) {
+        const userData = await response.json()
+        setIsAuthenticated(true)
+        setCurrentUser(userData.email)
+        saveAuthState(true, userData.email)
+        alert("Account created successfully!")
+      } else {
+        const errorData = await response.json()
+        alert(`Error: ${errorData.detail || 'Failed to create account'}`)
+      }
+    } catch (error) {
+      console.error('Error creating user:', error)
+      alert('Failed to create account. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
-
-    // Create new user
-    const newUser: User = {
-      email: signUpEmail.trim(),
-      pin: signUpPin,
-      createdAt: new Date().toISOString(),
-    }
-
-    const updatedUsers = {
-      ...existingUsers,
-      [signUpEmail]: newUser,
-    }
-
-    localStorage.setItem("orderToolUsers", JSON.stringify(updatedUsers))
-
-    // Auto sign in after successful sign up
-    setIsAuthenticated(true)
-    setCurrentUser(signUpEmail)
-    saveAuthState(true, signUpEmail)
-
-    alert("Account created successfully!")
   }
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     if (!signInEmail.trim() || !signInPin.trim()) {
       alert("Please enter both email and PIN.")
       return
     }
 
-    const existingUsers = JSON.parse(localStorage.getItem("orderToolUsers") || "{}")
-    const user = existingUsers[signInEmail]
+    setIsLoading(true)
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/signin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: signInEmail.trim(),
+          pin: signInPin,
+        }),
+      })
 
-    if (!user) {
-      alert("User not found. Please sign up first.")
-      return
+      if (response.ok) {
+        const userData = await response.json()
+        setIsAuthenticated(true)
+        setCurrentUser(userData.email)
+        saveAuthState(true, userData.email)
+      } else {
+        const errorData = await response.json()
+        alert(`Error: ${errorData.detail || 'Invalid credentials'}`)
+      }
+    } catch (error) {
+      console.error('Error signing in:', error)
+      alert('Failed to sign in. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
-
-    if (user.pin !== signInPin) {
-      alert("Incorrect PIN.")
-      return
-    }
-
-    setIsAuthenticated(true)
-    setCurrentUser(signInEmail)
-    saveAuthState(true, signInEmail)
   }
 
   const handleSignOut = () => {
@@ -234,10 +251,11 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
               </div>
               <Button 
                 onClick={handleSignIn} 
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 transform hover:scale-105 transition-all duration-200 shadow-xl hover:shadow-2xl"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 transform hover:scale-105 transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <LogIn className="h-5 w-5 mr-2" />
-                Sign In
+                {isLoading ? 'Signing In...' : 'Sign In'}
               </Button>
             </TabsContent>
 
@@ -277,10 +295,11 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
               </div>
               <Button 
                 onClick={handleSignUp} 
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 transform hover:scale-105 transition-all duration-200 shadow-xl hover:shadow-2xl"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 transform hover:scale-105 transition-all duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <UserPlus className="h-5 w-5 mr-2" />
-                Create Account
+                {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </TabsContent>
           </Tabs>

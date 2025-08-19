@@ -41,9 +41,21 @@ interface Customer {
   lastUpdated: string
 }
 
+interface BackendCustomer {
+  id: string
+  name: string
+  created_at: string
+  updated_at: string
+  money_given: number
+  total_spent: number
+  orders: Order[]
+}
+
 interface OrderBreakdownToolProps {
   currentUser?: string
 }
+
+const API_BASE_URL = "http://localhost:8000/api"
 
 export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolProps) {
   const [activeTab, setActiveTab] = useState("orders")
@@ -70,35 +82,183 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
   const [showDeleteOptions, setShowDeleteOptions] = useState<{ [customerId: string]: boolean }>({})
   const [newCustomerBalance, setNewCustomerBalance] = useState("")
   const [selectedOrders, setSelectedOrders] = useState<{ [customerId: string]: string[] }>({})
+  const [isLoading, setIsLoading] = useState(false)
 
-  const getStorageKey = () => {
-    return currentUser ? `orderBreakdownData_${currentUser}` : "orderBreakdownData"
+  // Fetch customers from backend
+  const fetchCustomers = async () => {
+    if (!currentUser) return
+    
+    setIsLoading(true)
+    try {
+      // Get user ID first - properly encode the email
+      const encodedEmail = encodeURIComponent(currentUser)
+      const userResponse = await fetch(`${API_BASE_URL}/users/${encodedEmail}`)
+      
+      if (!userResponse.ok) {
+        console.error('Failed to get user ID:', userResponse.status, userResponse.statusText)
+        return
+      }
+      
+      const userData = await userResponse.json()
+      const userId = userData.id
+      
+      console.log('User ID retrieved:', userId)
+      
+      // Fetch customers for this user
+      const customersResponse = await fetch(`${API_BASE_URL}/customers?user_id=${userId}`)
+      if (customersResponse.ok) {
+        const backendCustomers: BackendCustomer[] = await customersResponse.json()
+        console.log('Customers fetched:', backendCustomers)
+        
+        // Convert backend customers to frontend format
+        const convertedCustomers: { [key: string]: Customer } = {}
+        backendCustomers.forEach(backendCustomer => {
+          convertedCustomers[backendCustomer.id] = {
+            id: backendCustomer.id,
+            name: backendCustomer.name,
+            moneyGiven: backendCustomer.money_given || 0,
+            totalSpent: backendCustomer.total_spent || 0,
+            orders: backendCustomer.orders || [],
+            lastUpdated: new Date(backendCustomer.updated_at).toLocaleString()
+          }
+        })
+        
+        setCustomers(convertedCustomers)
+      } else {
+        console.error('Failed to fetch customers:', customersResponse.status, customersResponse.statusText)
+      }
+    } catch (error) {
+      console.error('Error fetching customers:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Create new customer in backend
+  const createNewCustomer = async () => {
+    if (!newCustomerName.trim() || !currentUser) {
+      alert("Please enter a customer name.")
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      // Get user ID first - properly encode the email
+      const encodedEmail = encodeURIComponent(currentUser)
+      const userResponse = await fetch(`${API_BASE_URL}/users/${encodedEmail}`)
+      
+      if (!userResponse.ok) {
+        console.error('Failed to get user information:', userResponse.status, userResponse.statusText)
+        alert('Failed to get user information')
+        return
+      }
+      
+      const userData = await userResponse.json()
+      const userId = userData.id
+      console.log('Creating customer for user ID:', userId)
+      
+      // Create customer in backend
+      const createResponse = await fetch(`${API_BASE_URL}/customers?user_id=${userId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newCustomerName.trim()
+        }),
+      })
+
+      if (createResponse.ok) {
+        const newCustomerData = await createResponse.json()
+        console.log('Customer created successfully:', newCustomerData)
+        
+        // Add to local state
+        const newCustomer: Customer = {
+          id: newCustomerData.id,
+          name: newCustomerData.name,
+          moneyGiven: 0,
+          totalSpent: 0,
+          orders: [],
+          lastUpdated: new Date(newCustomerData.created_at).toLocaleString()
+        }
+        
+        setCustomers(prev => ({
+          ...prev,
+          [newCustomerData.id]: newCustomer
+        }))
+        
+        // Sync with backend
+        await saveCustomerData(newCustomerData.id, newCustomer)
+        
+        setNewCustomerName("")
+        alert(`Customer "${newCustomer.name}" created successfully!`)
+      } else {
+        const errorData = await createResponse.json()
+        console.error('Failed to create customer:', errorData)
+        alert(`Error: ${errorData.detail || 'Failed to create customer'}`)
+      }
+    } catch (error) {
+      console.error('Error creating customer:', error)
+      alert('Failed to create customer. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Update customer in backend
+  const updateCustomerInBackend = async (customerId: string, updates: any) => {
+    if (!currentUser) return false
+    
+    try {
+      // Get user ID first
+      const encodedEmail = encodeURIComponent(currentUser)
+      const userResponse = await fetch(`${API_BASE_URL}/users/${encodedEmail}`)
+      if (!userResponse.ok) {
+        console.error('Failed to get user ID for update')
+        return false
+      }
+      
+      const userData = await userResponse.json()
+      const userId = userData.id
+      
+      // Update customer in backend
+      const updateResponse = await fetch(`${API_BASE_URL}/customers/${customerId}?user_id=${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      })
+
+      if (updateResponse.ok) {
+        console.log('Customer updated in backend successfully')
+        return true
+      } else {
+        console.error('Failed to update customer in backend:', updateResponse.status)
+        return false
+      }
+    } catch (error) {
+      console.error('Error updating customer in backend:', error)
+      return false
+    }
+  }
+
+  // Save customer data to backend
+  const saveCustomerData = async (customerId: string, customerData: Customer) => {
+    const updates = {
+      money_given: customerData.moneyGiven,
+      total_spent: customerData.totalSpent,
+      orders: customerData.orders
+    }
+    
+    return await updateCustomerInBackend(customerId, updates)
   }
 
   useEffect(() => {
-    const savedData = localStorage.getItem(getStorageKey())
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData)
-        console.log("[v0] Loading saved data for user:", currentUser, parsedData)
-        setCustomers(parsedData.customers || {})
-      } catch (error) {
-        console.error("Error loading saved data:", error)
-      }
-    } else {
-      console.log("[v0] No saved data found for user:", currentUser, "- starting fresh")
-      setCustomers({})
+    if (currentUser) {
+      fetchCustomers()
     }
   }, [currentUser])
-
-  useEffect(() => {
-    const dataToSave = {
-      customers,
-      lastUpdated: new Date().toISOString(),
-    }
-    console.log("[v0] Saving data to localStorage for user:", currentUser, dataToSave)
-    localStorage.setItem(getStorageKey(), JSON.stringify(dataToSave))
-  }, [customers, currentUser])
 
   const checkInsufficientBalance = () => {
     const currentCustomer = getCurrentCustomer()
@@ -122,7 +282,7 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
     return customer.moneyGiven - customer.totalSpent
   }
 
-  const updateItem = (index: number, key: string, value: string) => {
+  const updateItem = (index: number, key: keyof Item, value: string) => {
     const newItems = [...items]
     newItems[index][key] = value
     setItems(newItems)
@@ -139,9 +299,9 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
     setItems([...items, { desc: "", qty: "1", color: "", size: "", price: "0.00" }])
   }
 
-  const handleTopUp = () => {
+  const handleTopUp = async () => {
     if (!selectedCustomerForTopUp || !topUpAmount) {
-      alert("Please select a customer and enter an amount.")
+      alert("Please enter both a customer and enter an amount.")
       return
     }
 
@@ -163,6 +323,10 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
         amount,
         newBalance: updatedCustomer.moneyGiven,
       })
+      
+      // Sync with backend
+      saveCustomerData(selectedCustomerForTopUp, updatedCustomer)
+      
       return {
         ...prevCustomers,
         [selectedCustomerForTopUp]: updatedCustomer,
@@ -174,7 +338,7 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
     alert(`Successfully added $${amount.toFixed(2)} to the customer's account.`)
   }
 
-  const handleRefund = () => {
+  const handleRefund = async () => {
     if (!selectedCustomerForRefund || !refundAmount || !refundSource) {
       alert("Please select a customer, enter an amount, and provide a source/reason.")
       return
@@ -199,6 +363,10 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
         source: refundSource,
         newBalance: updatedCustomer.moneyGiven,
       })
+      
+      // Sync with backend
+      saveCustomerData(selectedCustomerForRefund, updatedCustomer)
+      
       return {
         ...prevCustomers,
         [selectedCustomerForRefund]: updatedCustomer,
@@ -384,33 +552,7 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
     setIsGenerateModalOpen(false)
   }
 
-  const createNewCustomer = () => {
-    if (!newCustomerName.trim()) {
-      alert("Please enter a customer name.")
-      return
-    }
-
-    const customerId = crypto.randomUUID()
-    const newCustomer: Customer = {
-      id: customerId,
-      name: newCustomerName.trim(),
-      orders: [],
-      moneyGiven: 0,
-      totalSpent: 0,
-      lastUpdated: new Date().toLocaleString(),
-    }
-
-    setCustomers((prev) => {
-      const updated = { ...prev, [customerId]: newCustomer }
-      console.log("[v0] Created new customer:", newCustomer)
-      return updated
-    })
-
-    setNewCustomerName("")
-    alert(`Customer "${newCustomer.name}" created successfully!`)
-  }
-
-  const saveProgress = () => {
+  const saveProgress = async () => {
     if (!selectedCustomerId) {
       alert("Please select a customer first.")
       return
@@ -457,6 +599,9 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
         newTotalSpent,
         orderCount: updatedOrders.length,
       })
+
+      // Sync with backend
+      saveCustomerData(selectedCustomerId, updatedCustomer)
 
       return {
         ...prevCustomers,
@@ -978,7 +1123,7 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                                       className="rounded"
                                     />
                                     <span>
-                                      Order #{order.orderRef || order.id.slice(-4)} - {order.date} -{" "}
+                                      Order #{order.orderRef || order.id.slice(-4)} - {order.orderDate} -{" "}
                                       {order.items.length} items
                                     </span>
                                   </label>
@@ -1024,7 +1169,7 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                               >
                                 <span className="text-sm">
-                                  Order #{order.orderRef || order.id.slice(-4)} - {order.date} - {order.items.length}{" "}
+                                  Order #{order.orderRef || order.id.slice(-4)} - {order.orderDate} - {order.items.length}{" "}
                                   items
                                 </span>
                                 <Button
@@ -1071,11 +1216,11 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                   </div>
                   <Button
                     onClick={createNewCustomer}
-                    disabled={!newCustomerName.trim()}
+                    disabled={!newCustomerName.trim() || isLoading}
                     className="w-full sm:w-auto h-10 sm:h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 button-3d text-white font-semibold"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Customer
+                    {isLoading ? "Creating..." : "Create Customer"}
+                    <Plus className="h-4 w-4 ml-2" />
                   </Button>
                 </CardContent>
               </Card>
@@ -1173,11 +1318,11 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                   </div>
                   <Button
                     onClick={handleTopUp}
-                    disabled={!selectedCustomerForTopUp || !topUpAmount}
+                    disabled={!selectedCustomerForTopUp || !topUpAmount || isLoading}
                     className="w-full sm:w-auto h-10 sm:h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 button-3d text-white font-semibold"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Money to Account
+                    {isLoading ? "Adding..." : "Add Money to Account"}
+                    <Plus className="h-4 w-4 ml-2" />
                   </Button>
                 </CardContent>
               </Card>
@@ -1229,10 +1374,10 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                   </p>
                   <Button
                     onClick={handleRefund}
-                    disabled={!selectedCustomerForRefund || !refundAmount || !refundSource}
+                    disabled={!selectedCustomerForRefund || !refundAmount || !refundSource || isLoading}
                     className="w-full sm:w-auto h-10 sm:h-11 bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 button-3d text-white font-semibold"
                   >
-                    Process Refund
+                    {isLoading ? "Processing..." : "Process Refund"}
                   </Button>
                 </CardContent>
               </Card>
