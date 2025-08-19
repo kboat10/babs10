@@ -22,7 +22,7 @@ interface AuthWrapperProps {
   children: ReactNode
 }
 
-const API_BASE_URL = "http://localhost:8000/api"
+  const API_BASE_URL = "https://babs10.onrender.com/api"
 
 export default function AuthWrapper({ children }: AuthWrapperProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
