@@ -672,24 +672,24 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                 </div>
 
                 {getCurrentCustomer() && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
-                    <h4 className="font-semibold text-blue-800 flex items-center gap-2 text-sm sm:text-base mb-3">
-                      <CreditCard className="h-4 w-4" />
+                  <div className="glass-effect border-blue-200/50 rounded-xl p-4 sm:p-6 shadow-xl shadow-blue-500/10">
+                    <h4 className="font-bold text-blue-800 flex items-center gap-2 text-sm sm:text-base mb-4 drop-shadow-sm">
+                      <CreditCard className="h-5 w-5 text-blue-600" />
                       {getCurrentCustomer()!.name}'s Account Balance
                     </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm">
-                      <div className="flex justify-between sm:block">
-                        <span className="text-blue-600">Money Given:</span>
-                        <div className="font-semibold">${getCurrentCustomer()!.moneyGiven.toFixed(2)}</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-xs sm:text-sm">
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-blue-200/30 flex justify-between sm:block">
+                        <span className="text-blue-700 font-medium">Money Given:</span>
+                        <div className="font-bold text-blue-800">${getCurrentCustomer()!.moneyGiven.toFixed(2)}</div>
                       </div>
-                      <div className="flex justify-between sm:block">
-                        <span className="text-blue-600">Total Spent:</span>
-                        <div className="font-semibold">${getCurrentCustomer()!.totalSpent.toFixed(2)}</div>
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-blue-200/30 flex justify-between sm:block">
+                        <span className="text-blue-700 font-medium">Total Spent:</span>
+                        <div className="font-bold text-blue-800">${getCurrentCustomer()!.totalSpent.toFixed(2)}</div>
                       </div>
-                      <div className="flex justify-between sm:block">
-                        <span className="text-blue-600">Balance:</span>
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-blue-200/30 flex justify-between sm:block">
+                        <span className="text-blue-700 font-medium">Balance:</span>
                         <div
-                          className={`font-bold ${calculateCustomerBalance(getCurrentCustomer()!) >= 0 ? "text-green-600" : "text-red-600"}`}
+                          className={`font-bold text-lg ${calculateCustomerBalance(getCurrentCustomer()!) >= 0 ? "text-emerald-600" : "text-red-600"} drop-shadow-sm`}
                         >
                           {formatBalance(calculateCustomerBalance(getCurrentCustomer()!))}
                         </div>
