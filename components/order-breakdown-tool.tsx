@@ -733,15 +733,15 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                     </div>
 
                     {items.map((item, index) => (
-                      <div key={index} className="border rounded-lg p-3 sm:p-4">
+                      <div key={index} className="border border-blue-200/40 rounded-xl p-3 sm:p-4 bg-gradient-to-br from-white/80 to-blue-50/30 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200">
                         <div className="lg:hidden space-y-3">
                           <div className="space-y-2">
-                            <Label className="text-xs text-muted-foreground">Item Description</Label>
+                            <Label className="text-xs text-blue-700 font-medium">Item Description</Label>
                             <Input
                               placeholder="Item description"
                               value={item.desc}
                               onChange={(e) => updateItem(index, "desc", e.target.value)}
-                              className="h-9"
+                              className="h-9 bg-white/80 border-blue-200/50 focus:border-blue-400 focus:ring-blue-300/30"
                             />
                           </div>
                           <div className="grid grid-cols-2 gap-3">
