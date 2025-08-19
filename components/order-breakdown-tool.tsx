@@ -712,10 +712,10 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
               </div>
 
               <div className="space-y-4 sm:space-y-6">
-                <Card>
-                  <CardHeader className="pb-3 sm:pb-4">
-                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                      <Package className="h-4 w-4 sm:h-5 sm:w-5" />
+                <Card className="shadow-xl shadow-blue-500/10 border-0 bg-white/80 backdrop-blur-sm">
+                  <CardHeader className="pb-3 sm:pb-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200/30">
+                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-blue-800 font-bold">
+                      <Package className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                       Items Ordered
                     </CardTitle>
                   </CardHeader>
