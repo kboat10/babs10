@@ -571,12 +571,21 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
 
   return (
     <div className="w-full max-w-7xl mx-auto p-3 sm:p-5">
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-green-500 text-white text-center p-4 sm:p-6">
-          <CardTitle className="flex items-center justify-center gap-2 text-lg sm:text-xl">
-            <Package className="h-5 w-5 sm:h-6 sm:w-6" />
+      <Card className="overflow-hidden card-3d shadow-2xl shadow-blue-500/20 border-0 bg-white/90 backdrop-blur-xl">
+        <CardHeader className="relative p-4 sm:p-6">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600"></div>
+          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+          <CardTitle className="relative flex items-center justify-center gap-3 text-white text-center text-lg sm:text-xl font-bold drop-shadow-lg">
+            <div className="relative">
+              <Package className="h-6 w-6 sm:h-7 sm:w-7 transform rotate-12 drop-shadow-lg" />
+              <div className="absolute -inset-1 bg-white/30 rounded-full blur-lg"></div>
+            </div>
             Order Breakdown Tool
-            {editingOrderId && <span className="text-xs sm:text-sm bg-orange-500 px-2 py-1 rounded">EDITING</span>}
+            {editingOrderId && (
+              <span className="text-xs sm:text-sm bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 rounded-full shadow-lg backdrop-blur-sm border border-white/20">
+                EDITING
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
 
