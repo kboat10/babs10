@@ -889,7 +889,7 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                       <Button
                         onClick={saveProgress}
                         disabled={!selectedCustomerId || items.length === 0}
-                        className="flex-1 h-11 sm:h-12 text-sm sm:text-base bg-orange-500 hover:bg-orange-600"
+                        className="flex-1 h-11 sm:h-12 text-sm sm:text-base bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 button-3d text-white font-semibold"
                       >
                         <Save className="h-4 w-4 mr-2" />
                         Save Progress
@@ -897,7 +897,7 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                       <Button
                         onClick={() => setIsGenerateModalOpen(true)}
                         disabled={!selectedCustomerId}
-                        className="flex-1 h-11 sm:h-12 text-sm sm:text-base bg-blue-500 hover:bg-blue-600"
+                        className="flex-1 h-11 sm:h-12 text-sm sm:text-base bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 button-3d text-white font-semibold"
                       >
                         <FileText className="h-4 w-4 mr-2" />
                         Generate Breakdown
@@ -905,7 +905,7 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                       <Button
                         variant="outline"
                         onClick={clearForm}
-                        className="flex-1 h-11 sm:h-12 text-sm sm:text-base bg-transparent"
+                        className="flex-1 h-11 sm:h-12 text-sm sm:text-base bg-white/80 border-blue-300/50 text-blue-700 hover:bg-blue-50/80 hover:border-blue-400/50 button-3d backdrop-blur-sm"
                       >
                         Clear All
                       </Button>
