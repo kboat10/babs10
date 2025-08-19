@@ -1242,16 +1242,16 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
       </Card>
 
       {isGenerateModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>Generate Breakdown</CardTitle>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md shadow-2xl shadow-blue-500/20 border-0 bg-white/95 backdrop-blur-xl">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
+              <CardTitle className="font-bold">Generate Breakdown</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-6">
               <div className="space-y-2">
-                <Label>Select Customer:</Label>
+                <Label className="font-semibold text-blue-800">Select Customer:</Label>
                 <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white/80 border-blue-200/50 focus:border-blue-400">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1265,9 +1265,9 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Format:</Label>
+                <Label className="font-semibold text-blue-800">Format:</Label>
                 <Select value={breakdownFormat} onValueChange={setBreakdownFormat}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white/80 border-blue-200/50 focus:border-blue-400">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1276,11 +1276,18 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex gap-2">
-                <Button onClick={handleGenerateBreakdown} className="flex-1">
+              <div className="flex gap-3 pt-2">
+                <Button 
+                  onClick={handleGenerateBreakdown} 
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 button-3d text-white font-semibold"
+                >
                   Generate
                 </Button>
-                <Button variant="outline" onClick={() => setIsGenerateModalOpen(false)} className="flex-1">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsGenerateModalOpen(false)} 
+                  className="flex-1 border-blue-300/50 text-blue-700 hover:bg-blue-50 button-3d"
+                >
                   Cancel
                 </Button>
               </div>
