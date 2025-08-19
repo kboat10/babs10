@@ -589,15 +589,21 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="p-3 sm:p-6">
+        <CardContent className="p-3 sm:p-6 bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/50">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 h-auto">
-              <TabsTrigger value="orders" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+            <TabsList className="grid w-full grid-cols-2 h-auto bg-gradient-to-r from-blue-100/80 to-indigo-100/80 backdrop-blur-sm border border-blue-200/30 shadow-lg">
+              <TabsTrigger 
+                value="orders" 
+                className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-lg text-blue-600 font-medium transition-all duration-200 hover:bg-white/50"
+              >
                 <Package className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden xs:inline">Order Entry</span>
                 <span className="xs:hidden">Orders</span>
               </TabsTrigger>
-              <TabsTrigger value="customers" className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm">
+              <TabsTrigger 
+                value="customers" 
+                className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-lg text-blue-600 font-medium transition-all duration-200 hover:bg-white/50"
+              >
                 <Users className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden xs:inline">Customer Management</span>
                 <span className="xs:hidden">Customers</span>
