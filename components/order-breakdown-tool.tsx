@@ -855,7 +855,7 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                     <Button
                       variant="outline"
                       onClick={addItem}
-                      className="w-full h-10 sm:h-11 border-dashed bg-transparent"
+                      className="w-full h-10 sm:h-11 border-dashed border-blue-300/60 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 hover:from-blue-100/80 hover:to-indigo-100/80 text-blue-700 hover:text-blue-800 button-3d backdrop-blur-sm"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Item
