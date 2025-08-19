@@ -1047,32 +1047,32 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
             </TabsContent>
 
             <TabsContent value="customers" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
-              <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                <Users className="h-5 w-5 sm:h-6 sm:w-6" />
+              <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-blue-800">
+                <Users className="h-6 w-6 text-blue-600" />
                 Customer Management
               </h2>
 
-              <Card>
-                <CardHeader className="pb-3 sm:pb-4">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Card className="shadow-xl shadow-blue-500/10 border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-3 sm:pb-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200/30">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-blue-800 font-bold">
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                     Add New Customer
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-sm sm:text-base">Customer Name:</Label>
+                    <Label className="text-sm sm:text-base font-semibold text-blue-800">Customer Name:</Label>
                     <Input
                       placeholder="Enter customer name"
                       value={newCustomerName}
                       onChange={(e) => setNewCustomerName(e.target.value)}
-                      className="h-10 sm:h-11"
+                      className="h-10 sm:h-11 bg-white/80 border-blue-200/50 focus:border-blue-400 focus:ring-blue-300/30"
                     />
                   </div>
                   <Button
                     onClick={createNewCustomer}
                     disabled={!newCustomerName.trim()}
-                    className="w-full sm:w-auto h-10 sm:h-11 bg-green-500 hover:bg-green-600"
+                    className="w-full sm:w-auto h-10 sm:h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 button-3d text-white font-semibold"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Create Customer
@@ -1080,18 +1080,18 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-3 sm:pb-4">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Card className="shadow-xl shadow-blue-500/10 border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-3 sm:pb-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200/30">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-blue-800 font-bold">
+                    <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                     View Customer Balance
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-sm sm:text-base">Select Customer:</Label>
+                    <Label className="text-sm sm:text-base font-semibold text-blue-800">Select Customer:</Label>
                     <Select value={selectedCustomerForView || ""} onValueChange={setSelectedCustomerForView}>
-                      <SelectTrigger className="h-10 sm:h-11">
+                      <SelectTrigger className="h-10 sm:h-11 bg-white/80 border-blue-200/50 focus:border-blue-400">
                         <SelectValue placeholder="Choose a customer" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1104,27 +1104,27 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                     </Select>
                   </div>
                   {selectedCustomerForView && customers[selectedCustomerForView] && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-blue-800 mb-3">
+                    <div className="glass-effect border-blue-200/50 rounded-xl p-4 shadow-xl shadow-blue-500/10">
+                      <h4 className="font-bold text-blue-800 mb-3">
                         {customers[selectedCustomerForView].name}'s Account
                       </h4>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                        <div>
-                          <span className="text-blue-600">Money Given:</span>
-                          <div className="font-semibold">
+                        <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-blue-200/30">
+                          <span className="text-blue-700 font-medium">Money Given:</span>
+                          <div className="font-bold text-blue-800">
                             ${customers[selectedCustomerForView].moneyGiven.toFixed(2)}
                           </div>
                         </div>
-                        <div>
-                          <span className="text-blue-600">Total Spent:</span>
-                          <div className="font-semibold">
+                        <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-blue-200/30">
+                          <span className="text-blue-700 font-medium">Total Spent:</span>
+                          <div className="font-bold text-blue-800">
                             ${customers[selectedCustomerForView].totalSpent.toFixed(2)}
                           </div>
                         </div>
-                        <div>
-                          <span className="text-blue-600">Balance:</span>
+                        <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-blue-200/30">
+                          <span className="text-blue-700 font-medium">Balance:</span>
                           <div
-                            className={`font-bold ${calculateCustomerBalance(customers[selectedCustomerForView]) >= 0 ? "text-green-600" : "text-red-600"}`}
+                            className={`font-bold text-lg ${calculateCustomerBalance(customers[selectedCustomerForView]) >= 0 ? "text-emerald-600" : "text-red-600"} drop-shadow-sm`}
                           >
                             {formatBalance(calculateCustomerBalance(customers[selectedCustomerForView]))}
                           </div>
@@ -1135,19 +1135,19 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-3 sm:pb-4">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Card className="shadow-xl shadow-blue-500/10 border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-3 sm:pb-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200/30">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-blue-800 font-bold">
+                    <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                     Customer Top-Up
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-2">
-                      <Label className="text-sm sm:text-base">Select Customer:</Label>
+                      <Label className="text-sm sm:text-base font-semibold text-blue-800">Select Customer:</Label>
                       <Select value={selectedCustomerForTopUp || ""} onValueChange={setSelectedCustomerForTopUp}>
-                        <SelectTrigger className="h-10 sm:h-11">
+                        <SelectTrigger className="h-10 sm:h-11 bg-white/80 border-blue-200/50 focus:border-blue-400">
                           <SelectValue placeholder="Choose a customer" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1160,21 +1160,21 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm sm:text-base">Amount to Add:</Label>
+                      <Label className="text-sm sm:text-base font-semibold text-blue-800">Amount to Add:</Label>
                       <Input
                         type="number"
                         step="0.01"
                         placeholder="0.00"
                         value={topUpAmount}
                         onChange={(e) => setTopUpAmount(e.target.value)}
-                        className="h-10 sm:h-11"
+                        className="h-10 sm:h-11 bg-white/80 border-blue-200/50 focus:border-blue-400 focus:ring-blue-300/30"
                       />
                     </div>
                   </div>
                   <Button
                     onClick={handleTopUp}
                     disabled={!selectedCustomerForTopUp || !topUpAmount}
-                    className="w-full sm:w-auto h-10 sm:h-11 bg-green-500 hover:bg-green-600"
+                    className="w-full sm:w-auto h-10 sm:h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 button-3d text-white font-semibold"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Money to Account
@@ -1182,16 +1182,16 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-3 sm:pb-4">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">Process Refund</CardTitle>
+              <Card className="shadow-xl shadow-blue-500/10 border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-3 sm:pb-4 bg-gradient-to-r from-red-50 to-pink-50 border-b border-red-200/30">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-red-800 font-bold">Process Refund</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-2">
-                      <Label className="text-sm sm:text-base">Select Customer:</Label>
+                      <Label className="text-sm sm:text-base font-semibold text-red-800">Select Customer:</Label>
                       <Select value={selectedCustomerForRefund || ""} onValueChange={setSelectedCustomerForRefund}>
-                        <SelectTrigger className="h-10 sm:h-11">
+                        <SelectTrigger className="h-10 sm:h-11 bg-white/80 border-red-200/50 focus:border-red-400">
                           <SelectValue placeholder="Choose a customer" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1204,33 +1204,33 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm sm:text-base">Refund Amount:</Label>
+                      <Label className="text-sm sm:text-base font-semibold text-red-800">Refund Amount:</Label>
                       <Input
                         type="number"
                         step="0.01"
                         placeholder="0.00"
                         value={refundAmount}
                         onChange={(e) => setRefundAmount(e.target.value)}
-                        className="h-10 sm:h-11"
+                        className="h-10 sm:h-11 bg-white/80 border-red-200/50 focus:border-red-400 focus:ring-red-300/30"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm sm:text-base">Refund Source/Reason:</Label>
+                    <Label className="text-sm sm:text-base font-semibold text-red-800">Refund Source/Reason:</Label>
                     <Textarea
                       placeholder="e.g., Order #123 - Blue dress return, Damaged item refund, etc."
                       value={refundSource}
                       onChange={(e) => setRefundSource(e.target.value)}
-                      className="min-h-[60px] resize-none"
+                      className="min-h-[60px] resize-none bg-white/80 border-red-200/50 focus:border-red-400 focus:ring-red-300/30"
                     />
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-red-700 font-medium">
                     This amount will be added to the customer's account balance
                   </p>
                   <Button
                     onClick={handleRefund}
                     disabled={!selectedCustomerForRefund || !refundAmount || !refundSource}
-                    className="w-full sm:w-auto h-10 sm:h-11 bg-red-400 hover:bg-red-500"
+                    className="w-full sm:w-auto h-10 sm:h-11 bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 button-3d text-white font-semibold"
                   >
                     Process Refund
                   </Button>
