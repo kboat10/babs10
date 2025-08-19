@@ -862,10 +862,10 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
                     </Button>
                   </CardContent>
 
-                  <div className="border-t pt-6 space-y-4">
+                  <div className="border-t border-blue-200/40 pt-6 space-y-4 bg-gradient-to-r from-white/50 to-blue-50/30 -mx-4 px-4 -mb-4 pb-4">
                     <div className="flex justify-end">
-                      <div className="text-right">
-                        <div className="text-2xl sm:text-3xl font-bold text-green-600">
+                      <div className="text-right bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white px-6 py-3 rounded-xl shadow-xl">
+                        <div className="text-2xl sm:text-3xl font-bold drop-shadow-lg">
                           TOTAL: ${calculateTotal().toFixed(2)}
                         </div>
                       </div>
