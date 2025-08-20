@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-API_BASE_URL = "http://localhost:8000/api"  # Change this to your deployed URL
+API_BASE_URL = "https://babs10.onrender.com/api"  # Your deployed Render backend
 BACKUP_FILE = "data_backup.json"
 
 def load_backup_data():
