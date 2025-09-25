@@ -232,6 +232,14 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
 
       if (updateResponse.ok) {
         console.log('Customer updated in backend successfully')
+        
+        // Trigger automatic backup after successful update
+        try {
+          await triggerBackup()
+        } catch (backupError) {
+          console.warn('Backup trigger failed, but data was saved:', backupError)
+        }
+        
         return true
       } else {
         console.error('Failed to update customer in backend:', updateResponse.status)
@@ -240,6 +248,52 @@ export default function OrderBreakdownTool({ currentUser }: OrderBreakdownToolPr
     } catch (error) {
       console.error('Error updating customer in backend:', error)
       return false
+    }
+  }
+
+  // Trigger automatic backup
+  const triggerBackup = async () => {
+    try {
+      // Create a backup entry in localStorage for immediate local backup
+      const backupData = {
+        timestamp: new Date().toISOString(),
+        user: currentUser,
+        action: 'data_updated',
+        customers: customers
+      }
+      
+      // Store in localStorage as immediate backup
+      const existingBackups = JSON.parse(localStorage.getItem('babs10_immediate_backups') || '[]')
+      existingBackups.push(backupData)
+      
+      // Keep only last 20 immediate backups
+      if (existingBackups.length > 20) {
+        existingBackups.splice(0, existingBackups.length - 20)
+      }
+      
+      localStorage.setItem('babs10_immediate_backups', JSON.stringify(existingBackups))
+      
+      // Also try to trigger backend backup (if available)
+      try {
+        await fetch(`${API_BASE_URL}/backup/trigger`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user: currentUser,
+            action: 'data_updated',
+            timestamp: new Date().toISOString()
+          })
+        })
+      } catch (e) {
+        // Backend backup endpoint might not exist, that's okay
+        console.log('Backend backup endpoint not available, using local backup only')
+      }
+      
+      console.log('✅ Immediate backup created successfully')
+    } catch (error) {
+      console.error('Error creating immediate backup:', error)
     }
   }
 

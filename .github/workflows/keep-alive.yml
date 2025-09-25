@@ -20,7 +20,7 @@ jobs:
           echo "Ping attempt $i/3..."
           
           # Make a request to the backend
-          response=$(curl -s -w "%{http_code}" -o /dev/null "https://babs10.onrender.com/api/")
+          response=$(curl -s -w "%{http_code}" -o /dev/null "https://babs10-backend.vercel.app/api/")
           
           if [ "$response" = "200" ]; then
             echo "✅ Backend is alive and responding (HTTP $response)"
@@ -40,11 +40,11 @@ jobs:
         echo "🔥 Warming up data endpoints..."
         
         # Try to access users endpoint
-        users_response=$(curl -s -w "%{http_code}" -o /dev/null "https://babs10.onrender.com/api/users/")
+        users_response=$(curl -s -w "%{http_code}" -o /dev/null "https://babs10-backend.vercel.app/api/users/")
         echo "Users endpoint: HTTP $users_response"
         
         # Try to access health endpoint if it exists
-        health_response=$(curl -s -w "%{http_code}" -o /dev/null "https://babs10.onrender.com/api/health")
+        health_response=$(curl -s -w "%{http_code}" -o /dev/null "https://babs10-backend.vercel.app/api/health")
         echo "Health endpoint: HTTP $health_response"
         
         echo "🎉 Keep-alive and endpoint warming completed!"

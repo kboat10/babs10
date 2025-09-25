@@ -496,3 +496,57 @@ logger = logging.getLogger(__name__)
 async def shutdown_db_client():
     if client:
         client.close()
+
+# Add backup endpoint
+@app.post("/api/backup/trigger")
+async def trigger_backup(backup_request: dict):
+    """Trigger a backup when data is updated"""
+    try:
+        logger.info(f"Backup triggered by user: {backup_request.get('user')}")
+        
+        # Create a backup entry
+        backup_data = {
+            "id": str(uuid.uuid4()),
+            "user": backup_request.get('user'),
+            "action": backup_request.get('action'),
+            "timestamp": backup_request.get('timestamp'),
+            "created_at": datetime.now().isoformat()
+        }
+        
+        # Store backup trigger in memory (you could also save to file here)
+        if not hasattr(app.state, 'backup_triggers'):
+            app.state.backup_triggers = []
+        
+        app.state.backup_triggers.append(backup_data)
+        
+        # Keep only last 100 backup triggers
+        if len(app.state.backup_triggers) > 100:
+            app.state.backup_triggers = app.state.backup_triggers[-100:]
+        
+        return {"status": "success", "message": "Backup triggered", "backup_id": backup_data["id"]}
+        
+    except Exception as e:
+        logger.error(f"Error triggering backup: {e}")
+        raise HTTPException(status_code=500, detail=f"Backup trigger failed: {str(e)}")
+
+# Add backup status endpoint
+@app.get("/api/backup/status")
+async def get_backup_status():
+    """Get backup status and recent triggers"""
+    try:
+        backup_triggers = getattr(app.state, 'backup_triggers', [])
+        
+        return {
+            "status": "healthy",
+            "backup_triggers_count": len(backup_triggers),
+            "recent_triggers": backup_triggers[-10:] if backup_triggers else [],
+            "last_backup": backup_triggers[-1] if backup_triggers else None
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting backup status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get backup status: {str(e)}")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

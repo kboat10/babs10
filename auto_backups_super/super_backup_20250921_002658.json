@@ -1,0 +1,14 @@
+{
+  "backup_created": "2025-09-21T00:26:57.652294",
+  "backup_type": "super_aggressive_auto",
+  "backup_interval_minutes": 2.0,
+  "users": [
+    {
+      "id": "bc65881c-0057-497e-87e7-092a324059c2",
+      "email": "lynaboateng1@gmail.com",
+      "created_at": "2025-09-20T16:24:57.072779",
+      "updated_at": "2025-09-20T16:24:57.072788"
+    }
+  ],
+  "customers": []
+}

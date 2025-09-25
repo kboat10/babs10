@@ -1,0 +1,128 @@
+#!/usr/bin/env python3
+"""
+ULTRA Aggressive Keep Alive Script for BABS10
+This script pings every 30 seconds to prevent ANY Render sleep cycles
+"""
+
+import requests
+import time
+import datetime
+import os
+import signal
+import sys
+
+# Configuration
+BACKEND_URL = "https://babs10.onrender.com/api/health"
+PING_INTERVAL = 30  # 30 seconds instead of 2 minutes
+LOG_FILE = "keep_alive_ultra_aggressive.log"
+MAX_RETRIES = 10
+RETRY_DELAY = 2
+
+def log_message(message):
+    """Log message to file and print to console"""
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_entry = f"[{timestamp}] {message}"
+    
+    # Print to console
+    print(log_entry)
+    
+    # Write to log file
+    try:
+        with open(LOG_FILE, 'a') as f:
+            f.write(log_entry + '\n')
+    except Exception as e:
+        print(f"Error writing to log: {e}")
+
+def ping_backend():
+    """Ping the backend with aggressive retry logic"""
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            log_message(f"🔄 ULTRA ping attempt {attempt}/{MAX_RETRIES}...")
+            
+            response = requests.get(BACKEND_URL, timeout=5)
+            
+            if response.status_code == 200:
+                log_message(f"✅ Backend pinged successfully - Status: {response.status_code}")
+                return True
+            else:
+                log_message(f"❌ Backend responded with status: {response.status_code}")
+                
+        except requests.exceptions.Timeout:
+            log_message(f"⏰ Timeout on attempt {attempt}")
+        except requests.exceptions.ConnectionError as e:
+            log_message(f"🔌 Connection error on attempt {attempt}: {e}")
+        except Exception as e:
+            log_message(f"❌ Unexpected error on attempt {attempt}: {e}")
+        
+        # Wait before retry (except on last attempt)
+        if attempt < MAX_RETRIES:
+            log_message(f"🔄 Retrying in {RETRY_DELAY} seconds...")
+            time.sleep(RETRY_DELAY)
+    
+    log_message(f"❌ All {MAX_RETRIES} attempts failed")
+    return False
+
+def signal_handler(signum, frame):
+    """Handle shutdown signals gracefully"""
+    log_message("🛑 Shutdown signal received, stopping ULTRA keep-alive service...")
+    sys.exit(0)
+
+def main():
+    """Main ULTRA aggressive keep-alive loop"""
+    # Set up signal handlers
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
+    log_message("🚀 BABS10 ULTRA Aggressive Keep-Alive Service Started")
+    log_message("=" * 80)
+    log_message(f"🔗 Backend URL: {BACKEND_URL}")
+    log_message(f"⏰ Ping interval: {PING_INTERVAL} seconds ({PING_INTERVAL/60:.1f} minutes)")
+    log_message(f"📝 Log file: {LOG_FILE}")
+    log_message(f"🔄 Max retries: {MAX_RETRIES}")
+    log_message(f"⏳ Retry delay: {RETRY_DELAY} seconds")
+    log_message("🚨 ULTRA AGGRESSIVE MODE - NO SLEEP ALLOWED!")
+    log_message("=" * 80)
+    
+    # Initial ping
+    log_message("🔄 Initial ULTRA ping to wake up backend...")
+    if ping_backend():
+        log_message("✅ Initial ULTRA ping successful!")
+    else:
+        log_message("⚠️ Initial ULTRA ping failed, but continuing...")
+    
+    # Main ping loop
+    ping_count = 1
+    successful_pings = 0
+    failed_pings = 0
+    
+    while True:
+        try:
+            log_message(f"⏳ Waiting {PING_INTERVAL} seconds until next ULTRA ping...")
+            time.sleep(PING_INTERVAL)
+            
+            ping_count += 1
+            log_message(f"🔄 ULTRA ping #{ping_count}...")
+            
+            if ping_backend():
+                successful_pings += 1
+                log_message(f"✅ ULTRA ping #{ping_count} successful!")
+            else:
+                failed_pings += 1
+                log_message(f"❌ ULTRA ping #{ping_count} failed!")
+            
+            # Log statistics
+            total_pings = successful_pings + failed_pings
+            success_rate = (successful_pings / total_pings * 100) if total_pings > 0 else 0
+            log_message(f"📊 Stats: {successful_pings}/{total_pings} successful pings ({success_rate:.1f}% success rate)")
+            
+        except KeyboardInterrupt:
+            log_message("🛑 Manual stop requested")
+            break
+        except Exception as e:
+            log_message(f"❌ Unexpected error in ULTRA ping loop: {e}")
+            time.sleep(15)  # Wait 15 seconds before retrying
+    
+    log_message("🛑 ULTRA keep-alive service stopped")
+
+if __name__ == "__main__":
+    main()
