@@ -3,7 +3,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
 
-const BACKEND_URL = "https://babs10-backend.vercel.app";
+const BACKEND_URL = "https://babs10-pearl.vercel.app";
 const API = `${BACKEND_URL}/api`;
 
 const Home = () => {
